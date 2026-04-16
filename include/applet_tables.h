@@ -1,6 +1,6 @@
 /* This is a generated file, don't edit */
 
-#define NUM_APPLETS 361
+#define NUM_APPLETS 362
 #define KNOWN_APPNAME_OFFSETS 8
 
 const uint16_t applet_nameofs[] ALIGN2 = {
@@ -147,6 +147,7 @@ const char applet_names[] ALIGN1 = ""
 "ipcrm" "\0"
 "ipcs" "\0"
 "iplink" "\0"
+"ipmonitor" "\0"
 "ipneigh" "\0"
 "iproute" "\0"
 "iprule" "\0"
@@ -726,6 +727,7 @@ const char applet_names[] ALIGN1 = ""
 #define APPLET_NO_yes 358
 #define APPLET_NO_zcat 359
 #define APPLET_NO_zcip 360
+#define APPLET_NO_ipmonitor 361
 
 #ifndef SKIP_applet_main
 int (*const applet_main[])(int argc, char **argv) = {
@@ -862,6 +864,7 @@ ipcalc_main,
 ipcrm_main,
 ipcs_main,
 iplink_main,
+ipmonitor_main,
 ipneigh_main,
 iproute_main,
 iprule_main,
