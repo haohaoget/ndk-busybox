@@ -81,6 +81,14 @@ jobs:
           EOF
           touch include/selinux/context.h
 
+          # Inject missing SysV IPC prototypes into libbb.h to prevent int-conversion errors
+          cat << 'EOF' >> include/libbb.h
+          void *shmat(int shmid, const void *shmaddr, int shmflg);
+          int shmget(int key, size_t size, int shmflg);
+          int shmdt(const void *shmaddr);
+          int shmctl(int shmid, int cmd, void *buf);
+          EOF
+
           # Only remove the static library dependency to avoid linker failure, keep building the actual .c files using our dummy inline functions
           sed -i '/LOCAL_STATIC_LIBRARIES := libselinux/d' Android.mk
 
