@@ -88,6 +88,8 @@ jobs:
           int shmdt(const void *shmaddr);
           struct shmid_ds;
           int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+          struct mntent;
+          char *hasmntopt(const struct mntent *mnt, const char *opt);
           EOF
 
           # Only remove the static library dependency to avoid linker failure, keep building the actual .c files using our dummy inline functions
