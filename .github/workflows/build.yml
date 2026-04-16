@@ -21,28 +21,54 @@ jobs:
           ndk-version: r26b # Recommended NDK version, can be changed if needed
           add-to-path: true
 
-      - name: Disable SELinux for Standalone NDK Build
+      - name: Inject Dummy libselinux for Standalone Build
         run: |
-          # Remove SELinux source files and libselinux dependency from Android.mk
-          sed -i '/selinux/d' Android.mk
-          # Disable SELinux features in autoconf.h properly by redefining macros
-          sed -i '/SELINUX/d' include/autoconf.h
-          cat << 'EOF' >> include/autoconf.h
-          #undef CONFIG_SELINUX
-          #define ENABLE_SELINUX 0
-          #define IF_SELINUX(...)
-          #define IF_NOT_SELINUX(...) __VA_ARGS__
-          
-          #undef CONFIG_SELINUXENABLED
-          #define ENABLE_SELINUXENABLED 0
-          #define IF_SELINUXENABLED(...)
-          #define IF_NOT_SELINUXENABLED(...) __VA_ARGS__
-          
-          #undef CONFIG_FEATURE_TAR_SELINUX
-          #define ENABLE_FEATURE_TAR_SELINUX 0
-          #define IF_FEATURE_TAR_SELINUX(...)
-          #define IF_NOT_FEATURE_TAR_SELINUX(...) __VA_ARGS__
+          # Create a dummy selinux header to satisfy the compiler without needing the actual libselinux source
+          mkdir -p include/selinux
+          cat << 'EOF' > include/selinux/selinux.h
+          #ifndef _SELINUX_H_
+          #define _SELINUX_H_
+          typedef char * security_context_t;
+          static inline int is_selinux_enabled(void) { return 0; }
+          static inline int getcon(security_context_t *con) { *con = 0; return -1; }
+          static inline int getfscreatecon(security_context_t *con) { *con = 0; return -1; }
+          static inline int setfscreatecon(security_context_t con) { return -1; }
+          static inline int lgetfilecon(const char *path, security_context_t *con) { *con = 0; return -1; }
+          static inline int getfilecon(const char *path, security_context_t *con) { *con = 0; return -1; }
+          static inline int lsetfilecon(const char *path, security_context_t con) { return -1; }
+          static inline int setfilecon(const char *path, security_context_t con) { return -1; }
+          static inline int fsetfilecon(int fd, security_context_t con) { return -1; }
+          static inline int fgetfilecon(int fd, security_context_t *con) { *con = 0; return -1; }
+          static inline int security_check_context(security_context_t con) { return -1; }
+          static inline int security_check_context_raw(security_context_t con) { return -1; }
+          static inline int setexeccon(security_context_t con) { return -1; }
+          static inline int getexeccon(security_context_t *con) { *con = 0; return -1; }
+          static inline void freecon(security_context_t con) {}
+          static inline int matchpathcon_init(const char *path) { return -1; }
+          static inline int matchpathcon(const char *path, int mode, security_context_t *con) { *con = 0; return -1; }
+          static inline int selinux_getenforce(void) { return 0; }
+          static inline int selinux_boolean_sub(const char *name, char **sub) { *sub = 0; return -1; }
+          static inline int security_has_boolean(const char *name) { return -1; }
+          static inline int security_set_boolean(const char *name, int value) { return -1; }
+          static inline int security_commit_booleans(void) { return -1; }
+          static inline int security_get_boolean_active(const char *name) { return -1; }
+          typedef struct context_s_t * context_t;
+          static inline context_t context_new(const char *str) { return (context_t)0; }
+          static inline const char * context_type_get(context_t c) { return 0; }
+          static inline int context_type_set(context_t c, const char *s) { return -1; }
+          static inline const char * context_range_get(context_t c) { return 0; }
+          static inline int context_range_set(context_t c, const char *s) { return -1; }
+          static inline const char * context_role_get(context_t c) { return 0; }
+          static inline int context_role_set(context_t c, const char *s) { return -1; }
+          static inline const char * context_user_get(context_t c) { return 0; }
+          static inline int context_user_set(context_t c, const char *s) { return -1; }
+          static inline char * context_str(context_t c) { return 0; }
+          static inline void context_free(context_t c) {}
+          #endif
           EOF
+
+          # Only remove the static library dependency to avoid linker failure, keep building the actual .c files using our dummy inline functions
+          sed -i '/LOCAL_STATIC_LIBRARIES := libselinux/d' Android.mk
 
       - name: Build with ndk-build
         run: |
