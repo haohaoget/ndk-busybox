@@ -52,6 +52,19 @@ jobs:
           static inline int security_set_boolean(const char *name, int value) { return -1; }
           static inline int security_commit_booleans(void) { return -1; }
           static inline int security_get_boolean_active(const char *name) { return -1; }
+          static inline const char *selinux_policy_root(void) { return 0; }
+          static inline int selinux_getenforcemode(int *mode) { *mode = 0; return -1; }
+          static inline int selinux_mkload_policy(int preservebools) { return -1; }
+          static inline int selinux_file_context_verify(const char *path, int mode) { return -1; }
+          static inline int security_getenforce(void) { return -1; }
+          static inline int security_policyvers(void) { return -1; }
+          static inline int security_get_boolean_names(char ***names, int *len) { *names = 0; *len = 0; return -1; }
+          static inline int security_get_boolean_pending(const char *name) { return -1; }
+          static inline int security_setenforce(int value) { return -1; }
+          static inline int security_canonicalize_context_raw(security_context_t con, security_context_t *out) { *out = 0; return -1; }
+          // Dummy basic types
+          typedef unsigned int security_class_t;
+          static inline int security_compute_create(security_context_t scon, security_context_t tcon, security_class_t tclass, security_context_t *newcon) { *newcon = 0; return -1; }
           typedef struct context_s_t * context_t;
           static inline context_t context_new(const char *str) { return (context_t)0; }
           static inline const char * context_type_get(context_t c) { return 0; }
