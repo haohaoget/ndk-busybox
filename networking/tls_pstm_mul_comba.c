@@ -48,7 +48,7 @@
 #ifndef DISABLE_PSTM
 
 /******************************************************************************/
-#if defined(PSTM_X86)
+#if 0 && defined(PSTM_X86)
 /* x86-32 optimized for 32 bit platforms. For 64 bit mode use X86_64 instead */
 #if !defined(__GNUC__) || !defined(__i386__) || !defined(PSTM_32BIT)
 #error "PSTM_X86 option requires GCC and 32 bit mode x86 processor"
