@@ -77,6 +77,8 @@ jobs:
           static inline int context_user_set(context_t c, const char *s) { return -1; }
           static inline char * context_str(context_t c) { return 0; }
           static inline void context_free(context_t c) {}
+          static inline int getpidcon(int pid, security_context_t *con) { *con = 0; return -1; }
+          __attribute__((weak)) char *selinux_mnt = 0;
           #endif
           EOF
           touch include/selinux/context.h
