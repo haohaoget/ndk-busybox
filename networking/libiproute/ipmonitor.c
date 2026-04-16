@@ -7,7 +7,7 @@
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 #include "ip_common.h"  /* #include "libbb.h" is inside */
-#include "libiproute/utils.h"
+#include "utils.h"
 
 // 补齐可能缺失的宏
 #ifndef RTMGRP_LINK
