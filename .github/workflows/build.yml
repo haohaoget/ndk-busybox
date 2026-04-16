@@ -25,18 +25,29 @@ jobs:
         run: |
           # Remove SELinux source files and libselinux dependency from Android.mk
           sed -i '/selinux/d' Android.mk
-          # Disable SELinux features in autoconf.h
-          sed -i 's/#define CONFIG_SELINUX 1/#undef CONFIG_SELINUX/g' include/autoconf.h
-          sed -i 's/#define ENABLE_SELINUX 1/#define ENABLE_SELINUX 0/g' include/autoconf.h
-          sed -i 's/#define CONFIG_SELINUXENABLED 1/#undef CONFIG_SELINUXENABLED/g' include/autoconf.h
-          sed -i 's/#define ENABLE_SELINUXENABLED 1/#define ENABLE_SELINUXENABLED 0/g' include/autoconf.h
-          sed -i 's/#define CONFIG_FEATURE_TAR_SELINUX 1/#undef CONFIG_FEATURE_TAR_SELINUX/g' include/autoconf.h
-          sed -i 's/#define ENABLE_FEATURE_TAR_SELINUX 1/#define ENABLE_FEATURE_TAR_SELINUX 0/g' include/autoconf.h
+          # Disable SELinux features in autoconf.h properly by redefining macros
+          sed -i '/SELINUX/d' include/autoconf.h
+          cat << 'EOF' >> include/autoconf.h
+          #undef CONFIG_SELINUX
+          #define ENABLE_SELINUX 0
+          #define IF_SELINUX(...)
+          #define IF_NOT_SELINUX(...) __VA_ARGS__
+          
+          #undef CONFIG_SELINUXENABLED
+          #define ENABLE_SELINUXENABLED 0
+          #define IF_SELINUXENABLED(...)
+          #define IF_NOT_SELINUXENABLED(...) __VA_ARGS__
+          
+          #undef CONFIG_FEATURE_TAR_SELINUX
+          #define ENABLE_FEATURE_TAR_SELINUX 0
+          #define IF_FEATURE_TAR_SELINUX(...)
+          #define IF_NOT_FEATURE_TAR_SELINUX(...) __VA_ARGS__
+          EOF
 
       - name: Build with ndk-build
         run: |
           # Build for multiple Android architectures
-          ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI="arm64-v8a armeabi-v7a x86 x86_64" APP_PLATFORM=android-21 APP_ALLOW_MISSING_DEPS=true
+          ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI="arm64-v8a armeabi-v7a x86 x86_64" APP_PLATFORM=android-34 APP_ALLOW_MISSING_DEPS=true
 
       - name: Prepare Release Assets
         run: |
