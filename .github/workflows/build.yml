@@ -86,7 +86,8 @@ jobs:
           void *shmat(int shmid, const void *shmaddr, int shmflg);
           int shmget(int key, size_t size, int shmflg);
           int shmdt(const void *shmaddr);
-          int shmctl(int shmid, int cmd, void *buf);
+          struct shmid_ds;
+          int shmctl(int shmid, int cmd, struct shmid_ds *buf);
           EOF
 
           # Only remove the static library dependency to avoid linker failure, keep building the actual .c files using our dummy inline functions
