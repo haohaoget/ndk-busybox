@@ -1,0 +1,49 @@
+name: Build and Release Android ndk-busybox
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags (e.g., v1.0)
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  build:
+    name: Build ndk-busybox
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26b # Recommended NDK version, can be changed if needed
+          add-to-path: true
+
+      - name: Build with ndk-build
+        run: |
+          # Build for multiple Android architectures
+          ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI="arm64-v8a armeabi-v7a x86 x86_64" APP_PLATFORM=android-21
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release_assets
+          # Rename and copy the binaries to a single folder for releasing
+          if [ -d "libs/arm64-v8a" ]; then cp libs/arm64-v8a/busybox release_assets/busybox-arm64-v8a; fi
+          if [ -d "libs/armeabi-v7a" ]; then cp libs/armeabi-v7a/busybox release_assets/busybox-armeabi-v7a; fi
+          if [ -d "libs/x86" ]; then cp libs/x86/busybox release_assets/busybox-x86; fi
+          if [ -d "libs/x86_64" ]; then cp libs/x86_64/busybox release_assets/busybox-x86_64; fi
+
+      - name: Upload to Actions Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: busybox-binaries
+          path: release_assets/
+
+      - name: Create Release and Upload
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_assets/*
+          generate_release_notes: true

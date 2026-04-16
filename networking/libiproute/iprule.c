@@ -50,7 +50,7 @@ enum {
 	ARG_dev, ARG_iif, ARG_nat, ARG_map_to, ARG_type, ARG_help,
 };
 
-static int FAST_FUNC print_rule(const struct sockaddr_nl *who UNUSED_PARAM,
+int FAST_FUNC print_rule(const struct sockaddr_nl *who UNUSED_PARAM,
 					struct nlmsghdr *n, void *arg UNUSED_PARAM)
 {
 	struct rtmsg *r = NLMSG_DATA(n);

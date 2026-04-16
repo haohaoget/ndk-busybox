@@ -16,7 +16,11 @@
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
 
 char FAST_FUNC **ip_parse_common_args(char **argv);
-//int FAST_FUNC print_neigh(struct sockaddr_nl *who, struct nlmsghdr *n, void *arg);
+int FAST_FUNC print_neigh(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg);
+int FAST_FUNC print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg);
+int FAST_FUNC print_addrinfo(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg);
+int FAST_FUNC print_linkinfo(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg);
+int FAST_FUNC print_rule(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg);
 int FAST_FUNC ipaddr_list_or_flush(char **argv, int flush);
 //int FAST_FUNC iproute_monitor(char **argv);
 //void FAST_FUNC ipneigh_reset_filter(void);
@@ -27,7 +31,7 @@ int FAST_FUNC do_iprule(char **argv);
 int FAST_FUNC do_ipneigh(char **argv);
 int FAST_FUNC do_iptunnel(char **argv);
 int FAST_FUNC do_iplink(char **argv);
-//int FAST_FUNC do_ipmonitor(char **argv);
+int FAST_FUNC do_ipmonitor(char **argv);
 //int FAST_FUNC do_multiaddr(char **argv);
 //int FAST_FUNC do_multiroute(char **argv);
 

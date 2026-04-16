@@ -109,7 +109,7 @@ static void print_queuelen(char *name)
 		printf("qlen %d", ifr.ifr_qlen);
 }
 
-static NOINLINE int print_linkinfo(const struct nlmsghdr *n)
+int FAST_FUNC print_linkinfo(const struct sockaddr_nl *who UNUSED_PARAM, struct nlmsghdr *n, void *arg UNUSED_PARAM)
 {
 	struct ifinfomsg *ifi = NLMSG_DATA(n);
 	struct rtattr *tb[IFLA_MAX+1];
@@ -223,7 +223,7 @@ static int flush_update(void)
 	return 0;
 }
 
-static int FAST_FUNC print_addrinfo(const struct sockaddr_nl *who UNUSED_PARAM,
+int FAST_FUNC print_addrinfo(const struct sockaddr_nl *who UNUSED_PARAM,
 		struct nlmsghdr *n, void *arg UNUSED_PARAM)
 {
 	struct ifaddrmsg *ifa = NLMSG_DATA(n);
@@ -590,7 +590,7 @@ int FAST_FUNC ipaddr_list_or_flush(char **argv, int flush)
 	for (l = linfo; l; l = l->next) {
 		if ((oneline && G_filter.family != AF_PACKET)
 		/* ^^^^^^^^^ "ip -oneline a" does not print link info */
-		 || (print_linkinfo(&l->h) == 0)
+		 || (print_linkinfo(NULL, &l->h, NULL) == 0)
 		) {
 			struct ifinfomsg *ifi = NLMSG_DATA(&l->h);
 			if (G_filter.family != AF_PACKET)

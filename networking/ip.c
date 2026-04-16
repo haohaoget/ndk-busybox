@@ -60,6 +60,13 @@
 //config:	help
 //config:	Short form of "ip neigh"
 //config:
+//config:config IPMONITOR
+//config:	bool "ipmonitor (10 kb)"
+//config:	default y
+//config:	select FEATURE_IP_MONITOR
+//config:	help
+//config:	Short form of "ip monitor"
+//config:
 //config:config FEATURE_IP_ADDRESS
 //config:	bool "ip address"
 //config:	default y
@@ -109,6 +116,13 @@
 //config:	help
 //config:	Add support for neighbor commands to "ip".
 //config:
+//config:config FEATURE_IP_MONITOR
+//config:	bool "ip monitor"
+//config:	default y
+//config:	depends on IP || IPMONITOR
+//config:	help
+//config:	Add support for monitor commands to "ip".
+//config:
 //config:config FEATURE_IP_RARE_PROTOCOLS
 //config:	bool "Support displaying rarely used link types"
 //config:	default n
@@ -126,6 +140,7 @@
 //applet:IF_IPRULE(  APPLET_NOEXEC(iprule  , iprule  , BB_DIR_SBIN, BB_SUID_DROP, iprule  ))
 //applet:IF_IPTUNNEL(APPLET_NOEXEC(iptunnel, iptunnel, BB_DIR_SBIN, BB_SUID_DROP, iptunnel))
 //applet:IF_IPNEIGH( APPLET_NOEXEC(ipneigh , ipneigh , BB_DIR_SBIN, BB_SUID_DROP, ipneigh ))
+//applet:IF_IPMONITOR(APPLET_NOEXEC(ipmonitor, ipmonitor, BB_DIR_SBIN, BB_SUID_DROP, ipmonitor))
 
 //kbuild:lib-$(CONFIG_IP) += ip.o
 //kbuild:lib-$(CONFIG_IPADDR) += ip.o
@@ -134,6 +149,7 @@
 //kbuild:lib-$(CONFIG_IPRULE) += ip.o
 //kbuild:lib-$(CONFIG_IPTUNNEL) += ip.o
 //kbuild:lib-$(CONFIG_IPNEIGH) += ip.o
+//kbuild:lib-$(CONFIG_IPMONITOR) += ip.o
 
 //--------------123456789.123456789.123456789.123456789.123456789.123456789.123456789.123....79
 //usage:#define ipaddr_trivial_usage
@@ -273,6 +289,10 @@
 //usage:       "show|flush [to PREFIX] [dev DEV] [nud STATE]"
 //usage:#define ipneigh_full_usage ""
 //usage:
+//usage:#define ipmonitor_trivial_usage
+//usage:       "[all | route | link | address | neigh | rule]"
+//usage:#define ipmonitor_full_usage ""
+//usage:
 //usage:#if ENABLE_FEATURE_IP_ADDRESS || ENABLE_FEATURE_IP_ROUTE
 //usage:# define IP_BAR_LINK   "|"
 //usage:#else
@@ -293,6 +313,11 @@
 //usage:#else
 //usage:# define IP_BAR_RULE   ""
 //usage:#endif
+//usage:#if ENABLE_FEATURE_IP_ADDRESS || ENABLE_FEATURE_IP_ROUTE || ENABLE_FEATURE_IP_LINK || ENABLE_FEATURE_IP_TUNNEL || ENABLE_FEATURE_IP_NEIGH || ENABLE_FEATURE_IP_RULE
+//usage:# define IP_BAR_MONITOR "|"
+//usage:#else
+//usage:# define IP_BAR_MONITOR ""
+//usage:#endif
 //usage:
 //usage:#define ip_trivial_usage
 //usage:       "[OPTIONS] "
@@ -302,6 +327,7 @@
 //usage:	IF_FEATURE_IP_TUNNEL( IP_BAR_TUNNEL"tunnel")
 //usage:	IF_FEATURE_IP_NEIGH(  IP_BAR_NEIGH "neigh")
 //usage:	IF_FEATURE_IP_RULE(   IP_BAR_RULE  "rule")
+//usage:	IF_FEATURE_IP_MONITOR(IP_BAR_MONITOR "monitor")
 //usage:       " [ARGS]"
 //usage:#define ip_full_usage "\n\n"
 //usage:       "OPTIONS := -f[amily] inet|inet6|link | -o[neline]\n"
@@ -317,6 +343,8 @@
 //usage:	"ip neigh "ipneigh_trivial_usage)
 //usage:	IF_FEATURE_IP_RULE("\n"
 //usage:	"ip rule "iprule_trivial_usage)
+//usage:	IF_FEATURE_IP_MONITOR("\n"
+//usage:	"ip monitor "ipmonitor_trivial_usage)
 
 #include "libbb.h"
 
@@ -380,6 +408,13 @@ int ipneigh_main(int argc UNUSED_PARAM, char **argv)
 	return ip_do(do_ipneigh, argv);
 }
 #endif
+#if ENABLE_IPMONITOR
+int ipmonitor_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
+int ipmonitor_main(int argc UNUSED_PARAM, char **argv)
+{
+	return ip_do(do_ipmonitor, argv);
+}
+#endif
 
 #if ENABLE_IP
 static int FAST_FUNC ip_print_help(char **argv UNUSED_PARAM)
@@ -399,6 +434,7 @@ int ip_main(int argc UNUSED_PARAM, char **argv)
 		IF_FEATURE_IP_TUNNEL("tunl\0")
 		IF_FEATURE_IP_RULE("rule\0")
 		IF_FEATURE_IP_NEIGH("neigh\0")
+		IF_FEATURE_IP_MONITOR("monitor\0")
 		;
 	static const ip_func_ptr_t ip_func_ptrs[] ALIGN_PTR = {
 		ip_print_help,
@@ -410,6 +446,7 @@ int ip_main(int argc UNUSED_PARAM, char **argv)
 		IF_FEATURE_IP_TUNNEL(do_iptunnel,)
 		IF_FEATURE_IP_RULE(do_iprule,)
 		IF_FEATURE_IP_NEIGH(do_ipneigh,)
+		IF_FEATURE_IP_MONITOR(do_ipmonitor,)
 	};
 	ip_func_ptr_t ip_func;
 	int key;
