@@ -616,6 +616,7 @@ extern char *strcasestr(const char *s, const char *pattern) FAST_FUNC;
 #endif
 
 #ifndef HAVE_STRCHRNUL
+#define strchrnul bb_strchrnul
 extern char *strchrnul(const char *s, int c) FAST_FUNC;
 #endif
 
