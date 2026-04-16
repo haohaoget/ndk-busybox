@@ -369,6 +369,7 @@ IF_IPROUTE( APPLET_NOEXEC(iproute , iproute , BB_DIR_SBIN, BB_SUID_DROP, iproute
 IF_IPRULE(  APPLET_NOEXEC(iprule  , iprule  , BB_DIR_SBIN, BB_SUID_DROP, iprule  ))
 IF_IPTUNNEL(APPLET_NOEXEC(iptunnel, iptunnel, BB_DIR_SBIN, BB_SUID_DROP, iptunnel))
 IF_IPNEIGH( APPLET_NOEXEC(ipneigh , ipneigh , BB_DIR_SBIN, BB_SUID_DROP, ipneigh ))
+IF_IPMONITOR(APPLET_NOEXEC(ipmonitor, ipmonitor, BB_DIR_SBIN, BB_SUID_DROP, ipmonitor))
 IF_IPCALC(APPLET_NOEXEC(ipcalc, ipcalc, BB_DIR_BIN, BB_SUID_DROP, ipcalc))
 IF_FAKEIDENTD(APPLET(fakeidentd, BB_DIR_USR_SBIN, BB_SUID_DROP))
 IF_NAMEIF(APPLET_NOEXEC(nameif, nameif, BB_DIR_SBIN, BB_SUID_DROP, nameif))
