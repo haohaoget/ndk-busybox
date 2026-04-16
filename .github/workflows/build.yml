@@ -21,6 +21,18 @@ jobs:
           ndk-version: r26b # Recommended NDK version, can be changed if needed
           add-to-path: true
 
+      - name: Disable SELinux for Standalone NDK Build
+        run: |
+          # Remove SELinux source files and libselinux dependency from Android.mk
+          sed -i '/selinux/d' Android.mk
+          # Disable SELinux features in autoconf.h
+          sed -i 's/#define CONFIG_SELINUX 1/#undef CONFIG_SELINUX/g' include/autoconf.h
+          sed -i 's/#define ENABLE_SELINUX 1/#define ENABLE_SELINUX 0/g' include/autoconf.h
+          sed -i 's/#define CONFIG_SELINUXENABLED 1/#undef CONFIG_SELINUXENABLED/g' include/autoconf.h
+          sed -i 's/#define ENABLE_SELINUXENABLED 1/#define ENABLE_SELINUXENABLED 0/g' include/autoconf.h
+          sed -i 's/#define CONFIG_FEATURE_TAR_SELINUX 1/#undef CONFIG_FEATURE_TAR_SELINUX/g' include/autoconf.h
+          sed -i 's/#define ENABLE_FEATURE_TAR_SELINUX 1/#define ENABLE_FEATURE_TAR_SELINUX 0/g' include/autoconf.h
+
       - name: Build with ndk-build
         run: |
           # Build for multiple Android architectures
