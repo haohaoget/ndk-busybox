@@ -147,7 +147,6 @@ const char applet_names[] ALIGN1 = ""
 "ipcrm" "\0"
 "ipcs" "\0"
 "iplink" "\0"
-"ipmonitor" "\0"
 "ipneigh" "\0"
 "iproute" "\0"
 "iprule" "\0"
@@ -376,6 +375,7 @@ const char applet_names[] ALIGN1 = ""
 "yes" "\0"
 "zcat" "\0"
 "zcip" "\0"
+"ipmonitor" "\0"
 ;
 
 #define APPLET_NO_acpid 2
@@ -864,7 +864,6 @@ ipcalc_main,
 ipcrm_main,
 ipcs_main,
 iplink_main,
-ipmonitor_main,
 ipneigh_main,
 iproute_main,
 iprule_main,
@@ -1093,6 +1092,7 @@ unxz_main,
 yes_main,
 gunzip_main,
 zcip_main,
+ipmonitor_main,
 };
 #endif
 
